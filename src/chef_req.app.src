@@ -1,0 +1,15 @@
+{application, chef_req,
+ [
+  {description, "Modules for making authenticated requests to a Chef API service."},
+  {vsn, git},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  ejson,
+                  ibrowse,
+                  mochiweb
+                 ]},
+  {mod, {chef_req_app, []}},
+  {env, []}
+ ]}.
