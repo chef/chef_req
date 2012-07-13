@@ -17,7 +17,7 @@
 
 
 
--spec make_chef_rest_client(string(), string(), any()) -> #chef_rest_client{}.
+-spec make_chef_rest_client(string(), string(), rsa_private_key()) -> #chef_rest_client{}.
 
 make_chef_rest_client(BaseUrl, UserName, PrivateKey) ->
     #chef_rest_client{base_url = BaseUrl,
