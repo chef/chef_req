@@ -13,7 +13,8 @@
 -type get_header_fun() :: fun((header_name()) -> header_value()).
 -type http_body() :: binary() | pid().
 -type user_id() :: binary().
--type http_method() :: binary().
+%-type http_method() :: binary().
+-type http_method() :: <<_:24,_:_*8>>. %% Covers <<"GET">> through <<"DELETE">>, <<"OPTIONS">> not supported
 -type http_time() :: binary().
 -type iso8601_time() :: binary().
 -type http_path() :: binary().
