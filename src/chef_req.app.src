@@ -6,10 +6,13 @@
   {applications, [
                   kernel,
                   stdlib,
+                  crypto,
+                  public_key,
+                  ssl,
                   ejson,
                   ibrowse,
                   mochiweb
                  ]},
-  {mod, {chef_req_app, []}},
+  {modules, []},
   {env, []}
  ]}.
