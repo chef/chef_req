@@ -18,13 +18,13 @@
 -define(buf_size, 16384).
 
 -export([
+         sign_request/5,
+         sign_request/6,
+         sign_request/8,
          extract_public_or_private_key/1,
          extract_private_key/1,
          hash_string/1,
          hash_file/1,
-         sign_request/5,
-         sign_request/6,
-         sign_request/8,
          authenticate_user_request/6,
          validate_headers/2
          ]).
@@ -36,27 +36,52 @@
 
 -include_lib("public_key/include/public_key.hrl").
 
--type calendar_time() :: { non_neg_integer(),  non_neg_integer(),  non_neg_integer() }.
--type calendar_date() :: { integer(),  1..12, 1..31 }.
 
--type header_name() :: binary().
--type header_value() :: binary() | 'undefined'.
--type get_header_fun() :: fun((header_name()) -> header_value()).
--type http_body() :: binary() | pid().
--type user_id() :: binary().
--type http_method() :: binary().
--type http_time() :: binary().
--type iso8601_time() :: binary().
--type http_path() :: binary().
--type sha_hash64() :: binary().
--type signing_algorithm() :: binary().
--type signing_version() :: binary().
--type erlang_time() :: {calendar_date(), calendar_time()}.
--type public_key_data() :: {cert, binary()} | {key, binary()}.
--type header_fun() :: fun((header_name()) -> header_value()).
--type time_skew() :: pos_integer().         % in seconds
-%% -type rsa_public_key() :: public_key:rsa_public_key().
+-spec sign_request(rsa_private_key(), user_id(), http_method(),
+                   erlang_time(), http_path()) ->
+      [{binary(), binary()}, ...].
+%% @doc Sign an HTTP request without a body (primarily GET)
+%% === Arguments ===
+%% <ul>
+%% <li> `PrivateKey': an rsa_private_key record (as defined in the public_key
+%%       module. {@link chef_authn:extract_public_or_private_key/1} can create
+%%       this record from a binary. </li>
+%% <li> `User': Chef User or Client name, as a binary. </li>
+%% <li> `Method': HTTP Method (e.g., GET, PUT, POST, DELETE) as a binary. </li>
+%% <li> `Time': The timestamp to include with the request signature, in
+%%      the format given by `calendar:universal_time()' </li>
+%% <li> `Path': full path to the resource, including protocol and host. </li>
+%% </ul>
+sign_request(PrivateKey, User, Method, Time, Path) ->
+    sign_request(PrivateKey, <<"">>, User, Method, Time, Path, ?signing_algorithm, ?signing_version).
 
+%% @doc Sign an HTTP request with a body (PUT/POST)
+-spec sign_request(rsa_private_key(), http_body(), user_id(), http_method(),
+                   erlang_time(), http_path()) ->
+    [{binary(), binary()}, ...].
+
+sign_request(PrivateKey, Body, User, Method, Time, Path) ->
+    sign_request(PrivateKey, Body, User, Method, Time, Path, ?signing_algorithm, ?signing_version).
+
+%% @doc Sign an HTTP request so it can be sent to a Chef server.
+%%
+%% Returns a list of header tuples that should be included in the
+%% final HTTP request.
+%%
+-spec sign_request(rsa_private_key(), http_body(), user_id(), http_method(),
+                   erlang_time(), http_path(), signing_algorithm(), signing_version()) ->
+    [{binary(), binary()}, ...].
+sign_request(PrivateKey, Body, User, Method, Time, Path, SignAlgorithm, SignVersion) ->
+    CTime = time_iso8601(Time),
+    HashedBody = hashed_body(Body),
+    SignThis = canonicalize_request(HashedBody, User, Method, CTime, Path, SignAlgorithm, SignVersion),
+    Sig = base64:encode(public_key:encrypt_private(SignThis, PrivateKey)),
+    X_Ops_Sign = iolist_to_binary(io_lib:format("version=~s", [SignVersion])),
+    [{<<"X-Ops-Content-Hash">>, HashedBody},
+     {<<"X-Ops-UserId">>, User},
+     {<<"X-Ops-Sign">>, X_Ops_Sign},
+     {<<"X-Ops-Timestamp">>, CTime}]
+       ++ sig_header_items(Sig).
 
 -spec process_key( {'RSAPublicKey', binary(), _} |
                    {'SubjectPublicKeyInfo', _, _}) ->
@@ -195,39 +220,6 @@ canonicalize_request(BodyHash, UserId, Method, Time, Path, _SignAlgorithm, SignV
                                             Time,
                                             CanonicalUserId])).
 
--spec sign_request(rsa_private_key(), user_id(), http_method(),
-                   http_time(), http_path()) ->
-      [{binary(), binary()}, ...].
-%% @doc Sign an HTTP request without a body (primarily GET)
-sign_request(PrivateKey, User, Method, Time, Path) ->
-    sign_request(PrivateKey, <<"">>, User, Method, Time, Path, ?signing_algorithm, ?signing_version).
-
--spec sign_request(rsa_private_key(), http_body(), user_id(), http_method(),
-                   http_time(), http_path()) ->
-    [{binary(), binary()}, ...].
-
-sign_request(PrivateKey, Body, User, Method, Time, Path) ->
-    sign_request(PrivateKey, Body, User, Method, Time, Path, ?signing_algorithm, ?signing_version).
-
-%% @doc Sign an HTTP request so it can be sent to a Chef server.
-%%
-%% Returns a list of header tuples that should be included in the
-%% final HTTP request.
-%%
--spec sign_request(rsa_private_key(), http_body(), user_id(), http_method(),
-                   http_time(), http_path(), signing_algorithm(), signing_version()) ->
-    [{binary(), binary()}, ...].
-sign_request(PrivateKey, Body, User, Method, Time, Path, SignAlgorithm, SignVersion) ->
-    CTime = canonical_time(Time),
-    HashedBody = hashed_body(Body),
-    SignThis = canonicalize_request(HashedBody, User, Method, CTime, Path, SignAlgorithm, SignVersion),
-    Sig = base64:encode(public_key:encrypt_private(SignThis, PrivateKey)),
-    X_Ops_Sign = iolist_to_binary(io_lib:format("version=~s", [SignVersion])),
-    [{<<"X-Ops-Content-Hash">>, HashedBody},
-     {<<"X-Ops-UserId">>, User},
-     {<<"X-Ops-Sign">>, X_Ops_Sign},
-     {<<"X-Ops-Timestamp">>, CTime}]
-       ++ sig_header_items(Sig).
 
 %% @doc Generate X-Ops-Authorization-I for use in building auth headers
 -spec xops_header(non_neg_integer()) -> header_name().

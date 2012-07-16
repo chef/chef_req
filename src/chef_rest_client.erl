@@ -9,6 +9,8 @@
 -module(chef_rest_client).
 
 -include("chef_rest_client.hrl").
+-include("chef_authn.hrl").
+-include_lib("public_key/include/public_key.hrl").
 -include_lib("ej/include/ej.hrl").
 
 -export([generate_signed_headers/3,
@@ -32,6 +34,10 @@ make_chef_rest_client(BaseUrl, UserName, PrivateKey) ->
 %% * do_chef_get/2,5 -- redundant
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+-spec generate_signed_headers(#chef_rest_client{}, http_path(), http_method(), binary()) ->
+                              [{string(), string()}, ...]
+                  ; (rsa_private_key(), string(), http_method(), http_path()) ->
+                              [{string(), string()}, ...].
 
 generate_signed_headers(#chef_rest_client{base_url = BaseUrl,
                                           user_name = UserName,
@@ -52,11 +58,20 @@ generate_signed_headers(#chef_rest_client{base_url = BaseUrl,
 generate_signed_headers(PrivateKey, User, Method, Path) ->
     generate_signed_headers(PrivateKey, User, Method, Path, <<"">>).
 
+-spec generate_signed_headers(#chef_rest_client{}, http_path(), http_method()) -> 
+                              [{string(), string()}, ...].
+
 generate_signed_headers(#chef_rest_client{}=Client, Path, Method) ->
     generate_signed_headers(Client, Path, Method, <<"">>).
 
+-spec generate_signed_headers(PrivateKey::rsa_private_key(),
+                              User::string(),
+                              Method::http_method(),
+                              Path::http_path(),
+                              Body::binary()) ->
+          [{string(), string()}, ...].
 generate_signed_headers(PrivateKey, User, Method, Path, Body) ->
-    Time = httpd_util:rfc1123_date(),
+    Time = calendar:universal_time(),
     SignedHeaders = chef_authn:sign_request(PrivateKey, Body,
                                             list_to_binary(User),
                                             Method, Time, Path),

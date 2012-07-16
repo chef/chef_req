@@ -1,3 +1,31 @@
+%% -*- erlang-indent-level: 4;indent-tabs-mode: nil; fill-column: 92 -*-
+%% ex: ts=4 sw=4 et
+%% @author Seth Falcon <seth@opscode.com>
+%% @author Christopher Brown <cb@opscode.com>
+%% @copyright 2011 Opscode, Inc.
+%%
+
+-type calendar_time() :: { non_neg_integer(),  non_neg_integer(),  non_neg_integer() }.
+-type calendar_date() :: { integer(),  1..12, 1..31 }.
+
+-type header_name() :: binary().
+-type header_value() :: binary() | 'undefined'.
+-type get_header_fun() :: fun((header_name()) -> header_value()).
+-type http_body() :: binary() | pid().
+-type user_id() :: binary().
+-type http_method() :: binary().
+-type http_time() :: binary().
+-type iso8601_time() :: binary().
+-type http_path() :: binary().
+-type sha_hash64() :: binary().
+-type signing_algorithm() :: binary().
+-type signing_version() :: binary().
+-type erlang_time() :: {calendar_date(), calendar_time()}.
+-type public_key_data() :: {cert, binary()} | {key, binary()}.
+-type header_fun() :: fun((header_name()) -> header_value()).
+-type time_skew() :: pos_integer().         % in seconds
+%% -type rsa_public_key() :: public_key:rsa_public_key().
+
 -define(signing_algorithm, <<"sha1">>).
 
 -define(signing_version, <<"1.1">>).

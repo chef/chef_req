@@ -25,6 +25,7 @@
 -define(body, <<"Spec Body">>).
 -define(hashed_body, <<"DFteJZPVv6WKdQmMqZUQUumUyRs=">>).
 -define(request_time_http, <<"Thu, 01 Jan 2009 12:00:00 GMT">>).
+-define(request_time_erlang, {{2009, 1, 1}, {12, 0, 0}}).
 -define(request_time_iso8601, <<"2009-01-01T12:00:00Z">>).
 -define(user, <<"spec-user">>).
 
@@ -121,7 +122,7 @@ sign_request_1_0_test() ->
          {<<"X-Ops-Authorization-6">>, AuthLine(6)}
         ],
     Sig = chef_authn:sign_request(Private_key, ?body, ?user, <<"post">>,
-                       ?request_time_http, ?path, ?signing_algorithm, ?signing_version_v1_0),
+                       ?request_time_erlang, ?path, ?signing_algorithm, ?signing_version_v1_0),
     ?assertEqual(EXPECTED_SIGN_RESULT, Sig).
 
 sign_request_1_1_test() ->
@@ -142,7 +143,7 @@ sign_request_1_1_test() ->
          {<<"X-Ops-Authorization-6">>, AuthLine(6)}
         ],
     Sig = chef_authn:sign_request(Private_key, ?body, ?user, <<"post">>,
-                       ?request_time_http, ?path, ?signing_algorithm, ?signing_version),
+                       ?request_time_erlang, ?path, ?signing_algorithm, ?signing_version),
     ?assertEqual(EXPECTED_SIGN_RESULT, Sig).
 
 decrypt_sig_test() ->
@@ -193,7 +194,7 @@ authenticate_user_request_test_() ->
     {ok, Public_key0} = file:read_file("../test/example_cert.pem"),
     Public_key = {cert, Public_key0},
     Headers = chef_authn:sign_request(Private_key, ?body, ?user, <<"post">>,
-                           ?request_time_http, ?path),
+                           ?request_time_erlang, ?path),
     GetHeader = fun(X) -> proplists:get_value(X, Headers) end,
     % force time skew to allow a request to be processed 'now'
     TimeSkew = make_skew_time(),
@@ -322,7 +323,7 @@ validate_headers_test_() ->
     {ok, RawKey} = file:read_file("../test/private_key"),
     Private_key = chef_authn:extract_private_key(RawKey),
     Headers = chef_authn:sign_request(Private_key, ?body, ?user, <<"post">>,
-                           httpd_util:rfc1123_date(), ?path),
+                           calendar:universal_time(), ?path),
     GetHeader = fun(X) -> proplists:get_value(X, Headers) end,
     MissingOneTests =
         [ fun() ->
