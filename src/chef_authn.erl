@@ -83,19 +83,10 @@ sign_request(PrivateKey, Body, User, Method, Time, Path, SignAlgorithm, SignVers
      {<<"X-Ops-Timestamp">>, CTime}]
        ++ sig_header_items(Sig).
 
--spec process_key( {'RSAPublicKey', binary(), _} |
-                   {'SubjectPublicKeyInfo', _, _}) ->
-                         rsa_public_key() | rsa_private_key() | {error, bad_key}.
-process_key({'SubjectPublicKeyInfo', _, _} = PubEntry) ->
-    public_key:pem_entry_decode(PubEntry);
-process_key({'RSAPublicKey', Der, _}) ->
-    public_key:der_decode('RSAPublicKey', Der);
-process_key({Type, Der, _}) ->
-    public_key:der_decode(Type, Der).
-%process_key(_) ->
-%    {error, bad_key}.
-
 -spec extract_public_or_private_key(binary()) -> term() | {error, bad_key}.
+%% @doc Accepts a public or private key in PEM format and returns a RSA public
+%% or private key record as appropriate. See documentation for the public_key
+%% module for more information about these data types.
 extract_public_or_private_key(RawKey) ->
     try public_key:pem_decode(RawKey) of
         [Key] -> process_key(Key)
@@ -112,6 +103,18 @@ extract_private_key(RawKey) ->
         _ ->
             {error, bad_key}
     end.
+
+-spec process_key( {'RSAPublicKey', binary(), _} |
+                   {'SubjectPublicKeyInfo', _, _}) ->
+                         rsa_public_key() | rsa_private_key() | {error, bad_key}.
+process_key({'SubjectPublicKeyInfo', _, _} = PubEntry) ->
+    public_key:pem_entry_decode(PubEntry);
+process_key({'RSAPublicKey', Der, _}) ->
+    public_key:der_decode('RSAPublicKey', Der);
+process_key({Type, Der, _}) ->
+    public_key:der_decode(Type, Der).
+%process_key(_) ->
+%    {error, bad_key}.
 
 -spec(hash_string(string()|binary()) -> sha_hash64()).
 %% @doc Base 64 encoded SHA1 of `Str'
