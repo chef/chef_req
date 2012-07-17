@@ -12,7 +12,7 @@
 -include("chef_authn.hrl").
 -include_lib("chef_rest_client.hrl").
 -include_lib("eunit/include/eunit.hrl").
--include_lib("ej/include/ej.hrl").
+%-include_lib("ej/include/ej.hrl").
 
 -define(gv(K, L), proplists:get_value(K, L)).
 -define(ibrowse_opts, [{ssl_options, []}, {response_format, binary}]).

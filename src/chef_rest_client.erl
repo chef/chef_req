@@ -11,7 +11,7 @@
 -include("chef_rest_client.hrl").
 -include("chef_authn.hrl").
 -include_lib("public_key/include/public_key.hrl").
--include_lib("ej/include/ej.hrl").
+%-include_lib("ej/include/ej.hrl").
 
 -export([generate_signed_headers/3,
          generate_signed_headers/4,

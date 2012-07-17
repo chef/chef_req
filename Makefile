@@ -1,8 +1,5 @@
-DEPS = deps/ej \
-       deps/ejson \
-       deps/ibrowse \
+DEPS = deps/ibrowse \
        deps/meck \
-       deps/mochiweb \
 
 ## Set the environment variable $DB_TYPE to either mysql or pgsql
 ## to run the correct integration tests.

@@ -9,9 +9,7 @@
                   crypto,
                   public_key,
                   ssl,
-                  ejson,
-                  ibrowse,
-                  mochiweb
+                  ibrowse
                  ]},
   {modules, []},
   {env, []}
