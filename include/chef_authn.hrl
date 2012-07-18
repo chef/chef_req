@@ -29,7 +29,9 @@
 
 -define(signing_algorithm, <<"sha1">>).
 
--define(signing_version, <<"1.1">>).
+-define(signing_version, <<"1.0">>).
+
+-define(signing_version_v1_1, <<"1.1">>).
 
 -define(signing_version_v1_0, <<"1.0">>).
 

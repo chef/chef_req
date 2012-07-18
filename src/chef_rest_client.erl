@@ -35,16 +35,12 @@ make_chef_rest_client(BaseUrl, UserName, PrivateKey) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec generate_signed_headers(#chef_rest_client{}, http_path(), http_method(), binary()) ->
-                              [{string(), string()}, ...]
-                  ; (rsa_private_key(), string(), http_method(), http_path()) ->
                               [{string(), string()}, ...].
 
-generate_signed_headers(#chef_rest_client{base_url = BaseUrl,
-                                          user_name = UserName,
+generate_signed_headers(#chef_rest_client{user_name = UserName,
                                           private_key = PrivateKey,
                                           request_source = RequestSource},
                         Path, Method, Body) ->
-    Url = BaseUrl ++ Path,
     ExtraHeaders = case RequestSource of
                        web ->
                            [{"x_ops_request_source", "web"}];
@@ -54,9 +50,7 @@ generate_signed_headers(#chef_rest_client{base_url = BaseUrl,
     Headers0 = generate_signed_headers(PrivateKey, UserName, Method, Path,
                                        Body),
     Headers = [{"Accept", "application/json"}|Headers0] ++ ExtraHeaders,
-    {Url, Headers};
-generate_signed_headers(PrivateKey, User, Method, Path) ->
-    generate_signed_headers(PrivateKey, User, Method, Path, <<"">>).
+    Headers.
 
 -spec generate_signed_headers(#chef_rest_client{}, http_path(), http_method()) -> 
                               [{string(), string()}, ...].
