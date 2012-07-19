@@ -3,6 +3,7 @@
 -export([request/3,
          request/4,
          request/5,
+         generate_request_params/5,
          make_config/4,
          load_config/1,
          teststart/0
@@ -40,17 +41,23 @@ request(Method, Path, Body, ReqConfig) ->
               [{string(), string()}, ...] | [], Body::binary(),
               ReqConfig::#chef_req_config{}) ->
               ibrowse_response().
-request(Method, Path, Headers, Body,
-        #chef_req_config{api_root = ApiRoot, base_path = BasePath, name = Name, private_key = Private}) ->
+request(Method, Path, Headers, Body, ChefReqConfig) ->
+    {Url, FullHeaders, ReqMethod, ReqBody} =
+      generate_request_params(Method, Path, Headers, Body, ChefReqConfig),
+    ibrowse:send_req(Url, FullHeaders, ReqMethod, ReqBody, ?ibrowse_opts).
+
+-spec generate_request_params(Method::http_method_as_atom(), Path::string(),
+              [{string(), string()}, ...] | [], Body::binary(),
+              ReqConfig::#chef_req_config{}) ->
+              {string(), [{string(), string()}, ...], http_method_as_atom(), binary()}.
+generate_request_params(Method, Path, Headers, Body,
+    #chef_req_config{api_root = ApiRoot, base_path = BasePath, name = Name, private_key = Private}) ->
     FullPath = BasePath ++ "/" ++ Path,
     {Url, FullHeaders} = make_headers(method_to_bin(Method), ApiRoot, FullPath,
 				      Name, Private, Body),
     FullHeaders1 = Headers ++ FullHeaders,
+    {Url, FullHeaders1, Method, Body}.
 
-    io:format("--------------------~n~p~n--------------------~n", [{full_headers_with_custom, FullHeaders1}]),
-
-    io:format("--------------------~n~p~n--------------------~n", [{req_args,[Url, FullHeaders1, Method, Body, ?ibrowse_opts] }]),
-    ibrowse:send_req(Url, FullHeaders1, Method, Body, ?ibrowse_opts).
 
 -spec make_config(ApiRoot::string(), BasePath::string(), Name::string(), {key, Key::binary()} | string()) ->
       #chef_req_config{}.
@@ -73,7 +80,6 @@ load_config(Path) ->
 
     Fmt = "~s://~s:~B",
     RootURL = lists:flatten(io_lib:format(Fmt, [Scheme, Host, Port])),
-    io:format("~p~n", [{root_url, RootURL}]),
 
     Name = ?gv(username, Config),
     make_config(RootURL, BasePath, Name, PrivatePath).
@@ -88,7 +94,6 @@ make_headers(Method, ApiRoot, Path, Name, Private, Body) ->
     Url = ApiRoot ++ Path,
     Headers0 = chef_rest_client:generate_signed_headers(Client, list_to_binary(Path),
                                                         Method, Body),
-    io:format("~p~n", [{headers0_from_chef_rest_client, Headers0}]),
     Headers1 = header_for_body(Body, Headers0),
     {Url, [{"Accept", "application/json"},
            {"X-CHEF-VERSION", ?CHEF_VERSION} | Headers1]}.
