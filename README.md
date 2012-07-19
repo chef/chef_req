@@ -23,21 +23,21 @@ A sample config file is given in `examples/chef.config`:
     %% a knife.rb or client.rb file.
     {server, "https://api.opscode.com/organizations/chef-oss-dev"}.
 
-To read your configuration, call `chef\_req:load_config/1` with the path
+To read your configuration, call `chef_req:load_config/1` with the path
 to your config file. The path can be relative to your cwd. The function
 returns a `#chef_req_config{}` record that you can pass to the request
 functions.
 
 ## Request API
-Requests are made using `chef\_req:request/3`, `chef\_req:request/4`, or 
-`chef\_req:request/5`.
+Requests are made using `chef_req:request/3`, `chef_req:request/4`, or 
+`chef_req:request/5`.
 
-* `chef\_req:request/3`: make requests that do not have a request body,
+* `chef_req:request/3`: make requests that do not have a request body,
   such as GET.
         chef_req:request(get, "/nodes", Conf).
-* `chef\_req:request/4`: make requests that have a request body, such as
+* `chef_req:request/4`: make requests that have a request body, such as
   a PUT or POST.
         chef_req:request(post, "/nodes", <<"node data as JSON">>, Conf).
-* `chef\_req:request/5`: Allows you to specify additional headers to be
+* `chef_req:request/5`: Allows you to specify additional headers to be
   sent with the request.
 
