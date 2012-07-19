@@ -1,0 +1,10 @@
+.eunit
+deps/
+ebin/
+TAGS
+.DS_Store
+doc/*.html
+*.beam
+/doc/edoc-info
+/doc/erlang.png
+/doc/stylesheet.css
