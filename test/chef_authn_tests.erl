@@ -96,12 +96,12 @@ canonicalize_request_v1_0_test() ->
     ?assertEqual(?expected_sign_string_v10, Val2).
 
 canonicalize_request_test() ->
-    Val1 = chef_authn:canonicalize_request(?hashed_body, ?user, <<"post">>, ?request_time_iso8601, ?path, ?signing_algorithm, ?signing_version),
+    Val1 = chef_authn:canonicalize_request(?hashed_body, ?user, <<"post">>, ?request_time_iso8601, ?path, ?signing_algorithm, ?signing_version_v1_1),
     ?assertEqual(?expected_sign_string, Val1),
 
     % verify normalization
     Val2 = chef_authn:canonicalize_request(?hashed_body, ?user, <<"post">>, ?request_time_iso8601,
-                                <<"/organizations//clownco/">>, ?signing_algorithm, ?signing_version),
+                                <<"/organizations//clownco/">>, ?signing_algorithm, ?signing_version_v1_1),
     ?assertEqual(?expected_sign_string, Val2).
 
 sign_request_1_0_test() ->
@@ -143,7 +143,7 @@ sign_request_1_1_test() ->
          {<<"X-Ops-Authorization-6">>, AuthLine(6)}
         ],
     Sig = chef_authn:sign_request(Private_key, ?body, ?user, <<"post">>,
-                       ?request_time_erlang, ?path, ?signing_algorithm, ?signing_version),
+                       ?request_time_erlang, ?path, ?signing_algorithm, ?signing_version_v1_1),
     ?assertEqual(EXPECTED_SIGN_RESULT, Sig).
 
 decrypt_sig_test() ->
