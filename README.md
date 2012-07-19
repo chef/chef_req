@@ -5,8 +5,9 @@ chef\_req is a library for making authenticated API requests in erlang.
 ## Try It
 To get started in a quick and dirty fashion:
 
+0. Install erlang, rebar, etc.
 1. edit `examples/chef.config` with your Chef credentials.
-2. compile the code by running `make`
+2. Fetch deps and compile the code: `make compile`
 3. Fire up the shell: `erl -pa ebin -pa deps/*/ebin`
 4. Start the apps and read the config: `Conf = chef_req:teststart().`
 5. Make a request: `chef_req:request(get, "/nodes", Conf).`
