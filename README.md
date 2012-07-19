@@ -35,10 +35,10 @@ Requests are made using `chef_req:request/3`, `chef_req:request/4`, or
 
 * `chef_req:request/3`: make requests that do not have a request body,
   such as GET.
-        chef_req:request(get, "/nodes", Conf).
+        ```chef_req:request(get, "/nodes", Conf).```
 * `chef_req:request/4`: make requests that have a request body, such as
   a PUT or POST.
-        chef_req:request(post, "/nodes", <<"node data as JSON">>, Conf).
+        ```chef_req:request(post, "/nodes", <<"node data as JSON">>, Conf).```
 * `chef_req:request/5`: Allows you to specify additional headers to be
   sent with the request.
 
