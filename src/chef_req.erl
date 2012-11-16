@@ -10,7 +10,7 @@
          ]).
 
 -include("chef_req.hrl").
--include("chef_authn.hrl").
+-include_lib("chef_authn/include/chef_authn.hrl").
 -include_lib("chef_rest_client.hrl").
 -include_lib("eunit/include/eunit.hrl").
 %-include_lib("ej/include/ej.hrl").

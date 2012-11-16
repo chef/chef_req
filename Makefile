@@ -1,5 +1,6 @@
 DEPS = deps/ibrowse \
        deps/meck \
+       deps/chef_authn
 
 ## Set the environment variable $DB_TYPE to either mysql or pgsql
 ## to run the correct integration tests.
@@ -44,22 +45,3 @@ test: eunit
 
 tags:
 	find src deps -name "*.[he]rl" -print | etags -
-
-itest_bundler:
-	cd itest; bundle install --binstubs
-
-itest_create:
-	@echo Creating integration test database
-	@cd itest;bundle exec ./create_schema.rb ${DB_TYPE} create
-
-itest_clean:
-	@rm -f itest/*.beam
-	@echo Dropping integration test database
-	@cd itest;bundle exec ./create_schema.rb ${DB_TYPE} destroy
-
-itest: compile itest_bundler itest_create itest_run itest_clean
-
-itest_run:
-	cd itest;erlc -I ../include *.erl
-	@erl -pa deps/*/ebin -pa ebin -pa itest -noshell -eval "eunit:test(itest, [verbose])" \
-	-s erlang halt -db_type $(DB_TYPE)
