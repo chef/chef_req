@@ -9,7 +9,7 @@
 -module(chef_rest_client).
 
 -include("chef_rest_client.hrl").
--include("chef_authn.hrl").
+-include_lib("chef_authn/include/chef_authn.hrl").
 -include_lib("public_key/include/public_key.hrl").
 %-include_lib("ej/include/ej.hrl").
 
@@ -52,7 +52,7 @@ generate_signed_headers(#chef_rest_client{user_name = UserName,
     Headers = [{"Accept", "application/json"}|Headers0] ++ ExtraHeaders,
     Headers.
 
--spec generate_signed_headers(#chef_rest_client{}, http_path(), http_method()) -> 
+-spec generate_signed_headers(#chef_rest_client{}, http_path(), http_method()) ->
                               [{string(), string()}, ...].
 
 generate_signed_headers(#chef_rest_client{}=Client, Path, Method) ->
