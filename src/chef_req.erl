@@ -6,7 +6,7 @@
          generate_request_params/5,
          make_config/4,
          load_config/1,
-         teststart/0
+         manual_start/0
          ]).
 
 %% For dialyzer -Wunderspecs
@@ -20,7 +20,7 @@
 -define(gv(K, L), proplists:get_value(K, L)).
 -define(ibrowse_opts, [{ssl_options, []}, {response_format, binary}]).
 
-teststart() ->
+manual_start() ->
     application:start(crypto),
     application:start(public_key),
     application:start(ssl),
