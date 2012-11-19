@@ -9,7 +9,6 @@
 -module(chef_rest_client).
 
 -include("chef_rest_client.hrl").
--include("chef_authn.hrl").
 -include_lib("public_key/include/public_key.hrl").
 %-include_lib("ej/include/ej.hrl").
 
@@ -35,8 +34,8 @@ make_chef_rest_client(BaseUrl, UserName, PrivateKey) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec generate_signed_headers(Client :: #chef_rest_client{},
-                              Path :: http_path(),
-                              Method :: http_method()) ->
+                              Path :: binary(),
+                              Method :: binary()) ->
                               [{string(), string()}, ...].
 generate_signed_headers(#chef_rest_client{}=Client, Path, Method) ->
     generate_signed_headers(Client, Path, Method, <<"">>).

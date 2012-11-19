@@ -9,8 +9,10 @@
          teststart/0
          ]).
 
+%% For dialyzer -Wunderspecs
+-type http_method() :: <<_:24,_:_*8>>.
+
 -include("chef_req.hrl").
--include("chef_authn.hrl").
 -include_lib("chef_rest_client.hrl").
 -include_lib("eunit/include/eunit.hrl").
 %-include_lib("ej/include/ej.hrl").
@@ -84,7 +86,7 @@ load_config(Path) ->
     Name = ?gv(username, Config),
     make_config(RootURL, BasePath, Name, PrivatePath).
 
--spec make_headers(Method::http_method(), ApiRoot::string(),
+-spec make_headers(Method::binary(), ApiRoot::string(),
                    Path::string(), Name::string(),
                    Private::rsa_private_key(), Body::binary()) ->
                    {string(), [{string(), string()}, ...]}.
