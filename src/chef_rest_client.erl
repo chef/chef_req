@@ -9,7 +9,6 @@
 -module(chef_rest_client).
 
 -include("chef_rest_client.hrl").
--include("chef_authn.hrl").
 -include_lib("public_key/include/public_key.hrl").
 %-include_lib("ej/include/ej.hrl").
 
@@ -34,9 +33,18 @@ make_chef_rest_client(BaseUrl, UserName, PrivateKey) ->
 %% * do_chef_get/2,5 -- redundant
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec generate_signed_headers(#chef_rest_client{}, http_path(), http_method(), binary()) ->
+-spec generate_signed_headers(Client :: #chef_rest_client{},
+                              Path :: binary(),
+                              Method :: binary()) ->
                               [{string(), string()}, ...].
+generate_signed_headers(#chef_rest_client{}=Client, Path, Method) ->
+    generate_signed_headers(Client, Path, Method, <<"">>).
 
+-spec generate_signed_headers(Client :: #chef_rest_client{},
+                              Path :: binary(),
+                              Method :: binary(),
+                              Body :: binary()) ->
+                              [{string(), string()}, ...].
 generate_signed_headers(#chef_rest_client{user_name = UserName,
                                           private_key = PrivateKey,
                                           request_source = RequestSource},
@@ -47,31 +55,9 @@ generate_signed_headers(#chef_rest_client{user_name = UserName,
                        user ->
                            []
                    end,
-    Headers0 = generate_signed_headers(PrivateKey, UserName, Method, Path,
-                                       Body),
+    Headers0 = chef_authn:sign_request(PrivateKey, Body,
+                                       list_to_binary(UserName),
+                                       Method, now, Path),
     Headers = [{"Accept", "application/json"}|Headers0] ++ ExtraHeaders,
     Headers.
 
--spec generate_signed_headers(#chef_rest_client{}, http_path(), http_method()) -> 
-                              [{string(), string()}, ...].
-
-generate_signed_headers(#chef_rest_client{}=Client, Path, Method) ->
-    generate_signed_headers(Client, Path, Method, <<"">>).
-
--spec generate_signed_headers(PrivateKey::rsa_private_key(),
-                              User::string(),
-                              Method::http_method(),
-                              Path::http_path(),
-                              Body::binary()) ->
-          [{string(), string()}, ...].
-generate_signed_headers(PrivateKey, User, Method, Path, Body) ->
-    Time = calendar:universal_time(),
-    SignedHeaders = chef_authn:sign_request(PrivateKey, Body,
-                                            list_to_binary(User),
-                                            Method, Time, Path),
-    % TODO: control the type of K and V *before* getting in here It
-    % looks like ibrowse only requires that header names be atom or
-    % string, but values can be iolist.  It might be worth
-    % investigating whether ibrowse can be taught how to handle header
-    % names that are binaries to avoid conversion.
-    [{binary_to_list(K), binary_to_list(V)} || {K, V} <- SignedHeaders].
