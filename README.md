@@ -9,7 +9,7 @@ To get started in a quick and dirty fashion:
 1. edit `examples/chef.config` with your Chef credentials.
 2. Fetch deps and compile the code: `make compile`
 3. Fire up the shell: `erl -pa ebin -pa deps/*/ebin`
-4. Start the apps and read the config: `Conf = chef_req:teststart().`
+4. Start the apps and read the config: `Conf = chef_req:manual_start().`
 5. Make a request: `chef_req:request(get, "/nodes", Conf).`
 
 ## Configuration
@@ -30,7 +30,7 @@ returns a `#chef_req_config{}` record that you can pass to the request
 functions.
 
 ## Request API
-Requests are made using `chef_req:request/3`, `chef_req:request/4`, or 
+Requests are made using `chef_req:request/3`, `chef_req:request/4`, or
 `chef_req:request/5`.
 
 * `chef_req:request/3`: make requests that do not have a request body,
