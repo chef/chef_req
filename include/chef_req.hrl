@@ -1,3 +1,6 @@
+
+-include_lib("public_key/include/public_key.hrl").
+
 %% version used in X-CHEF-VERSION header sent to server
 -define(CHEF_VERSION, "0.10.0").
 
