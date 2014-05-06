@@ -87,7 +87,7 @@ load_config(Path) ->
 
 -spec make_headers(Method::binary(), ApiRoot::string(),
                    Path::string(), Name::string(),
-                   Private::rsa_private_key(), Body::binary()) ->
+                   Private::public_key:rsa_private_key(), Body::binary()) ->
                    {string(), [{string(), string()}, ...]}.
 make_headers(Method, ApiRoot, Path, Name, Private, Body) ->
     Client = chef_rest_client:make_chef_rest_client(ApiRoot, Name, Private),

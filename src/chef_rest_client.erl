@@ -18,7 +18,7 @@
 
 
 
--spec make_chef_rest_client(string(), string(), rsa_private_key()) -> #chef_rest_client{}.
+-spec make_chef_rest_client(string(), string(), public_key:rsa_private_key()) -> #chef_rest_client{}.
 
 make_chef_rest_client(BaseUrl, UserName, PrivateKey) ->
     #chef_rest_client{base_url = BaseUrl,
@@ -60,4 +60,3 @@ generate_signed_headers(#chef_rest_client{user_name = UserName,
                                        Method, now, Path),
     Headers = [{"Accept", "application/json"}|Headers0] ++ ExtraHeaders,
     Headers.
-

@@ -7,7 +7,7 @@
           api_root :: string(),               % e.g., https://api.opscode.com:443
           base_path :: string(),                % e.g., /organizations/clownco
           name :: string(),                   % user or client name
-          private_key :: rsa_private_key()}). % the parsed representation of your user.pem
+          private_key :: public_key:rsa_private_key()}). % the parsed representation of your user.pem
 
 -type header_list() :: [{string(), string()}, ...].
 
