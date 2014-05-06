@@ -1,4 +1,3 @@
-
 -include_lib("public_key/include/public_key.hrl").
 
 %% version used in X-CHEF-VERSION header sent to server
@@ -17,4 +16,3 @@
 -type http_method_as_atom() :: get | put | post | delete.
 
 -type ibrowse_response() :: {ok, string(), [{string(), string()}, ...], binary()} | {error, term()}.
-

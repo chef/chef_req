@@ -26,4 +26,3 @@
                            user_name :: string(),
                            private_key :: rsa_private_key(),
                            request_source = user :: 'user' | 'web' }).
-
