@@ -15,7 +15,6 @@
 -include("chef_req.hrl").
 -include_lib("chef_rest_client.hrl").
 -include_lib("eunit/include/eunit.hrl").
-%-include_lib("ej/include/ej.hrl").
 
 -define(gv(K, L), proplists:get_value(K, L)).
 -define(ibrowse_opts, [{ssl_options, []}, {response_format, binary}]).
@@ -56,7 +55,7 @@ generate_request_params(Method, Path, Headers, Body,
     #chef_req_config{api_root = ApiRoot, base_path = BasePath, name = Name, private_key = Private}) ->
     FullPath = BasePath ++ "/" ++ Path,
     {Url, FullHeaders} = make_headers(method_to_bin(Method), ApiRoot, FullPath,
-				      Name, Private, Body),
+                                      Name, Private, Body),
     FullHeaders1 = Headers ++ FullHeaders,
     {Url, FullHeaders1, Method, Body}.
 
@@ -88,7 +87,7 @@ load_config(Path) ->
 
 -spec make_headers(Method::binary(), ApiRoot::string(),
                    Path::string(), Name::string(),
-                   Private::rsa_private_key(), Body::binary()) ->
+                   Private::public_key:rsa_private_key(), Body::binary()) ->
                    {string(), [{string(), string()}, ...]}.
 make_headers(Method, ApiRoot, Path, Name, Private, Body) ->
     Client = chef_rest_client:make_chef_rest_client(ApiRoot, Name, Private),
@@ -119,4 +118,3 @@ method_to_bin(delete) ->
     <<"DELETE">>;
 method_to_bin(head) ->
     <<"HEAD">>.
-

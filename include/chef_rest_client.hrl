@@ -24,6 +24,5 @@
 
 -record(chef_rest_client, {base_url :: string(),
                            user_name :: string(),
-                           private_key :: rsa_private_key(),
+                           private_key :: public_key:rsa_private_key(),
                            request_source = user :: 'user' | 'web' }).
-
