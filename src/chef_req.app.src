@@ -8,6 +8,7 @@
                   stdlib,
                   crypto,
                   public_key,
+                  chef_authn,
                   ssl,
                   ibrowse
                  ]},
