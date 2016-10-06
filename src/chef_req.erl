@@ -12,9 +12,7 @@
 %% For dialyzer -Wunderspecs
 -type http_method() :: <<_:24,_:_*8>>.
 
--include("chef_req.hrl").
--include_lib("chef_rest_client.hrl").
--include_lib("eunit/include/eunit.hrl").
+-include("chef_rest_client.hrl").
 
 -define(gv(K, L), proplists:get_value(K, L)).
 -define(ibrowse_opts, [{ssl_options, []}, {response_format, binary}]).
@@ -87,7 +85,7 @@ load_config(Path) ->
 
 -spec make_headers(Method::binary(), ApiRoot::string(),
                    Path::string(), Name::string(),
-                   Private::public_key:rsa_private_key(), Body::binary()) ->
+                   Private::rsa_private_key(), Body::binary()) ->
                    {string(), [{string(), string()}, ...]}.
 make_headers(Method, ApiRoot, Path, Name, Private, Body) ->
     Client = chef_rest_client:make_chef_rest_client(ApiRoot, Name, Private),
