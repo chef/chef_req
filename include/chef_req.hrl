@@ -1,4 +1,5 @@
 -include_lib("public_key/include/public_key.hrl").
+-type rsa_private_key() :: #'RSAPrivateKey'{}.
 
 %% version used in X-CHEF-VERSION header sent to server
 -define(CHEF_VERSION, "0.10.0").
@@ -7,7 +8,7 @@
           api_root :: string(),               % e.g., https://api.opscode.com:443
           base_path :: string(),                % e.g., /organizations/clownco
           name :: string(),                   % user or client name
-          private_key :: public_key:rsa_private_key()}). % the parsed representation of your user.pem
+          private_key :: rsa_private_key()}). % the parsed representation of your user.pem
 
 -type header_list() :: [{string(), string()}, ...].
 

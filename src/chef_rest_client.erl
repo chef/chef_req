@@ -9,17 +9,12 @@
 -module(chef_rest_client).
 
 -include("chef_rest_client.hrl").
--include_lib("public_key/include/public_key.hrl").
-%-include_lib("ej/include/ej.hrl").
 
 -export([generate_signed_headers/3,
          generate_signed_headers/4,
          make_chef_rest_client/3]).
 
-
-
--spec make_chef_rest_client(string(), string(), public_key:rsa_private_key()) -> #chef_rest_client{}.
-
+-spec make_chef_rest_client(string(), string(), rsa_private_key()) -> #chef_rest_client{}.
 make_chef_rest_client(BaseUrl, UserName, PrivateKey) ->
     #chef_rest_client{base_url = BaseUrl,
                       user_name = UserName,

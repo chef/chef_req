@@ -20,9 +20,9 @@
 % @doc Helper module for calling various Chef REST endpoints
 % @end
 
--include_lib("public_key/include/public_key.hrl").
+-include("chef_req.hrl").
 
 -record(chef_rest_client, {base_url :: string(),
                            user_name :: string(),
-                           private_key :: public_key:rsa_private_key(),
+                           private_key :: rsa_private_key(),
                            request_source = user :: 'user' | 'web' }).
